@@ -38,3 +38,38 @@ void PhotoAnalyser::show_faces(Mat image){
     waitKey(0);//To wait for keystroke to terminate the program//
 
 }
+
+int PhotoAnalyser::detect_webcam(){
+
+
+    cv::VideoCapture cap(0); // Open the default camera
+    if(!cap.isOpened()) // Check if we succeeded
+        return -1;
+
+    cv::CascadeClassifier face_cascade;
+    if(!face_cascade.load("/usr/local/share/opencv4/haarcascades/haarcascade_frontalface_alt.xml")) // Load the face detection cascade classifier
+        return -1;
+
+    cv::Mat frame;
+    while(true)
+    {
+        cap >> frame; // Capture a frame from the camera
+
+        std::vector<cv::Rect> faces;
+        cv::cvtColor(frame, frame, cv::COLOR_BGR2GRAY); // Convert to grayscale for face detection
+        face_cascade.detectMultiScale(frame, faces, 1.1, 2, 0|cv::CASCADE_SCALE_IMAGE, cv::Size(30, 30)); // Detect faces
+
+        for(size_t i = 0; i < faces.size(); i++)
+        {
+            cv::rectangle(frame, faces[i], cv::Scalar(0, 0, 255), 2); // Draw rectangles around detected faces
+        }
+
+        cv::imshow("Face Detection", frame); // Display the frame with detected faces
+
+        if(cv::waitKey(1) == 27) // Wait for the user to press 'ESC' key to exit
+            break;
+    }
+
+    return 0;
+
+}

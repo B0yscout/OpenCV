@@ -13,4 +13,5 @@ class PhotoAnalyser{
     public:
         void show_image(Mat image);
         void show_faces(Mat image);
+        int detect_webcam();
 };

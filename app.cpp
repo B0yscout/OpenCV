@@ -46,9 +46,14 @@ void app::run()
 
         PhotoAnalyser face_detector{};
 
+        // show photo
         face_detector.show_image(image);
 
+        // show faces in photo
         face_detector.show_faces(image);
+
+        // show faces in webcam 
+        face_detector.detect_webcam();
 
         // throw logic_error("Application non développée");
     }
