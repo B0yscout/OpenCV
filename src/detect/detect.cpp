@@ -54,15 +54,38 @@ int PhotoAnalyser::detect_webcam(){
     while(true)
     {
         cap >> frame; // Capture a frame from the camera
-
+        Mat frame_gray;
         std::vector<cv::Rect> faces;
-        cv::cvtColor(frame, frame, cv::COLOR_BGR2GRAY); // Convert to grayscale for face detection
-        face_cascade.detectMultiScale(frame, faces, 1.1, 2, 0|cv::CASCADE_SCALE_IMAGE, cv::Size(30, 30)); // Detect faces
+        cv::cvtColor(frame, frame_gray, cv::COLOR_BGR2GRAY); // Convert to grayscale for face detection
+        face_cascade.detectMultiScale(frame_gray, faces, 1.1, 2, 0|cv::CASCADE_SCALE_IMAGE, cv::Size(30, 30)); // Detect faces
+
+        // Calculate the center point of the video frame
+        Point frameCenter(frame.cols / 2, frame.rows / 2);
+        
 
         for(size_t i = 0; i < faces.size(); i++)
         {
-            cv::rectangle(frame, faces[i], cv::Scalar(0, 0, 255), 2); // Draw rectangles around detected faces
+            // write coordinates next to the rectangle
+            putText(frame, "X: " + to_string(faces[i].x) + ", Y: " + to_string(faces[i].y),
+                    Point(10,10), FONT_HERSHEY_SIMPLEX, 0.5, Scalar(0, 0, 255), 1);
+                    //Point(faces[i].x, faces[i].y - 10)
+
+            rectangle(frame, faces[i], Scalar(0, 0, 0), 2); // Draw rectangles around detected faces
+            
+            // Calculate the center point of the detected face rectangle
+            Point faceCenter(faces[i].x + faces[i].width / 2, faces[i].y + faces[i].height / 2);
+
+            // Calculate the distance between the face center and the frame center
+            double distance = norm(frameCenter - faceCenter);
+
+            // Highlight the face rectangle in red if it is centered
+            if (distance < 50)
+            {
+                rectangle(frame, faces[i], Scalar(0, 0, 255), 2);
+            }
+
         }
+
 
         cv::imshow("Face Detection", frame); // Display the frame with detected faces
 
