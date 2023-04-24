@@ -7,13 +7,15 @@
 
 # For Windows: Prevent overriding the parent project's compiler/linker settings
 set(gtest_force_shared_crt ON CACHE BOOL "" FORCE)
-
 # FetchContent_MakeAvailable(googletest)
 add_subdirectory(googletest)
 
 set(test_app_name openCV_thales_tests)
 
 enable_testing()
+
+# include the openCV library
+include_directories( ${OpenCV_INCLUDE_DIRS} )
 
 add_executable(${test_app_name} 
 temp.test.cpp
@@ -22,9 +24,16 @@ temp.test.cpp
 # ...
 )
 
-target_link_libraries(${test_app_name} PUBLIC GTest::gtest_main detect)
+target_link_libraries(${test_app_name} PUBLIC 
+    GTest::gtest_main
+    detect
+    ${OpenCV_LIBS}
+)
 
-target_include_directories(${test_app_name} PUBLIC include/detect)
+target_include_directories(${test_app_name} PUBLIC 
+    include/detect
+    ${OpenCV_INCLUDE_DIRS}
+)
 
 include(GoogleTest)
 gtest_discover_tests(openCV_thales_tests)
